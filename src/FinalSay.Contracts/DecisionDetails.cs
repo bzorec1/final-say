@@ -1,4 +1,4 @@
-﻿namespace FinalSay.Worker.Contracts;
+﻿namespace FinalSay.Contracts;
 
 public record DecisionDetails
 {

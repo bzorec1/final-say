@@ -4,12 +4,49 @@ services:
   rabbitmq:
     image: masstransit/rabbitmq:latest
     ports:
-     - "5672:5672"
-     - "15672:15672"
-     - "15692:15692"
+      - "5672:5672"
+      - "15672:15672"
+      - "15692:15692"
+
   worker:
     build:
       context: ./src/FinalSay.Worker
       dockerfile: Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - rabbitmq
+      - sqlserver
+    volumes:
+      - ./src/FinalSay.Worker/appsettings.json:/app/appsettings.json
+
+  web-api:
+    build:
+      context: ./src/FinalSay.WebApi
+      dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - rabbitmq
+      - sqlserver
+      - worker
+    ports:
+      - "5279:80"
+    volumes:
+      - ./src/FinalSay.WebApi/appsettings.json:/app/appsettings.json
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Abcd1234%
+      - MSSQL_PID=Express
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+
+volumes:
+  sqlserver-data:
+    driver: local

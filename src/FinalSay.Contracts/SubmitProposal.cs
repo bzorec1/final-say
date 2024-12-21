@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace FinalSay.Worker.Contracts;
+namespace FinalSay.Contracts;
 
 public record SubmitProposal
 {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FinalSay.Worker.Contracts;
+namespace FinalSay.Contracts;
 
 public record SubmitDecision
 {

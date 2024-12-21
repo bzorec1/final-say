@@ -1,5 +1,7 @@
+using System;
 using System.Reflection;
 using System.Threading.Tasks;
+using FinalSay.Repository;
 using Microsoft.Extensions.Hosting;
 using MassTransit;
 
@@ -16,6 +18,10 @@ public static class Program
         .CreateDefaultBuilder(args)
         .ConfigureServices((hostContext, services) =>
         {
+            var connectionString = hostContext.Configuration.GetSection("ConnectionStrings:Default").Value;
+
+            services.AddFinalSayRepository(connectionString ?? throw new InvalidOperationException());
+
             services.AddMassTransit(x =>
             {
                 x.AddDelayedMessageScheduler();

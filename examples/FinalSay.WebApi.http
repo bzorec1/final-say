@@ -1,0 +1,24 @@
+@WebApi_HostAddress = http://localhost:5279
+
+POST {{WebApi_HostAddress}}/submit/proposal
+Content-Type: application/json
+Accept: application/json
+
+{
+  "proposalId": "181c0000-6393-3630-36a4-08daf4e9c6da",
+  "submittedAt": "2024-01-12T21:55:53.714Z",
+  "author": "Test",
+  "content": {
+    "title": "Proposal Title",
+    "description": "Proposal Description"
+  },
+  "members": [
+    {
+      "memberId": "181c0000-6393-3630-36a4-08daf9e7c6da",
+      "name": "John Doe",
+      "email": "john@gmail.com"
+    }
+  ]
+}
+
+###
