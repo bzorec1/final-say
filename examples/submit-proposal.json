@@ -1,0 +1,40 @@
+﻿{
+  "messageId": "181c0000-6393-3630-36a4-08daf4e7c6da",
+  "correlationId": "ef375b18-69ee-4a9e-b5ec-44ee1177a27e",
+  "conversationId": null,
+  "initiatorId": null,
+  "messageType": [
+    "urn:message:FinalSay.Worker.Contracts:SubmitProposal"
+  ],
+  "message": {
+    "proposalId": "181c0000-6393-3630-36a4-08daf4e7c6da",
+    "submittedAt": "2024-01-12T21:55:53.714Z",
+    "author": "Test",
+    "content": {
+      "title": "Proposal Title",
+      "description": "Proposal Description"
+    },
+    "members": [
+      {
+        "memberId": "181c0000-6393-3630-36a4-08daf4e7c6da",
+        "name": "John Doe",
+        "email": "john@gmail.com"
+      }
+    ]
+  },
+  "expirationTime": null,
+  "sentTime": "2023-01-12T21:55:53.715882Z",
+  "headers": {
+    "Application-Header": "SomeValue"
+  },
+  "host": {
+    "machineName": "MyComputer",
+    "processName": "dotnet",
+    "processId": 427,
+    "assembly": "TestProject",
+    "assemblyVersion": "2.11.1.93",
+    "frameworkVersion": "6.0.7",
+    "massTransitVersion": "8.0.10.0",
+    "operatingSystemVersion": "Unix 12.6.2"
+  }
+}
