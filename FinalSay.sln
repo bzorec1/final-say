@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FinalSay.Worker", "src\FinalSay.Worker\FinalSay.Worker.csproj", "{DB719ECF-8315-20F8-E3EC-5477F65E0AEF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DB719ECF-8315-20F8-E3EC-5477F65E0AEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB719ECF-8315-20F8-E3EC-5477F65E0AEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB719ECF-8315-20F8-E3EC-5477F65E0AEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB719ECF-8315-20F8-E3EC-5477F65E0AEF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
