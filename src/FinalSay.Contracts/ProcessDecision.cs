@@ -2,13 +2,11 @@
 
 namespace FinalSay.Contracts;
 
-public record SubmitDecision
+public class ProcessDecision
 {
     public Guid ProposalId { get; init; }
 
-    public string Author { get; init; } = null!;
+    public string Member { get; init; } = null!;
 
     public bool Decision { get; init; }
-    
-    public DateTime SubmittedAt { get; init; }
 }

@@ -24,10 +24,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapPost("/submit/proposal", async (IPublishEndpoint endpoint, SubmitProposal proposal) =>
+app.MapPost("/submit/proposal", async (
+    IRequestClient<SubmitProposal> requestClient,
+    SubmitProposal proposal,
+    CancellationToken cancellationToken = default) =>
 {
-    await endpoint.Publish(proposal);
-    return Results.Accepted();
+    var response = await requestClient.GetResponse<ProposalSubmitted>(proposal, cancellationToken);
+
+    return Results.Accepted(null, response.Message);
 });
 app.MapPost("/submit/decision", async (IPublishEndpoint endpoint, SubmitDecision decision) =>
 {
