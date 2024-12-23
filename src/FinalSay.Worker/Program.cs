@@ -1,11 +1,9 @@
 using System;
-using System.Reflection;
 using System.Threading.Tasks;
 using FinalSay.Repository;
 using FinalSay.Worker.Consumers;
 using Microsoft.Extensions.Hosting;
 using MassTransit;
-using Microsoft.EntityFrameworkCore;
 
 namespace FinalSay.Worker;
 

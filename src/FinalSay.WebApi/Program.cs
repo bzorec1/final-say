@@ -1,4 +1,5 @@
-using FinalSay.Contracts;
+using FinalSay.Contracts.Commands;
+using FinalSay.Contracts.Events;
 using MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);

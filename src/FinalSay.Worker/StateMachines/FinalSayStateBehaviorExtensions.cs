@@ -1,5 +1,5 @@
 ﻿using System;
-using FinalSay.Contracts;
+using FinalSay.Contracts.Commands;
 using FinalSay.Repository;
 using MassTransit;
 
@@ -16,7 +16,6 @@ public static class FinalSayStateBehaviorExtensions
                 context.Saga.CorrelationId = context.Message.ProposalId;
                 context.Saga.SubmittedAt = context.Message.SubmittedAt;
                 context.Saga.DecidedAt = null;
-                context.Saga.Decisions = [];
 
                 context.Saga.RequestId = context.RequestId;
                 context.Saga.ResponseAddress = context.ResponseAddress;
@@ -27,15 +26,7 @@ public static class FinalSayStateBehaviorExtensions
         this EventActivityBinder<FinalSayState, SubmitDecision> binder)
     {
         return binder
-            .Then(context =>
-            {
-                context.Saga.Decisions.Add(new Decisions
-                {
-                    Member = context.Message.Author,
-                    Approved = context.Message.Decision,
-                    DecidedAt = context.Message.SubmittedAt
-                });
-            });
+            .Then(context => { });
     }
 
     public static EventActivityBinder<FinalSayState, T> SendResponseAsync<T, TResponse>(

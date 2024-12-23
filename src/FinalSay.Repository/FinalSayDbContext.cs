@@ -1,4 +1,5 @@
 ﻿using FinalSay.Contracts;
+using FinalSay.Contracts.Commands;
 using Microsoft.EntityFrameworkCore;
 
 namespace FinalSay.Repository;
@@ -29,17 +30,17 @@ public class FinalSayDbContext : DbContext
 
             builder.HasKey(nameof(SubmitProposal.ProposalId));
 
-            builder.Property(nameof(SubmitProposal.Author))
+            builder.Property(nameof(SubmitProposal.AuthorMemberId))
                 .IsRequired();
 
             builder.Property(nameof(SubmitProposal.SubmittedAt));
 
-            builder.OwnsOne(typeof(ProposalContent), nameof(SubmitProposal.Content), navigationBuilder =>
+            builder.OwnsOne(typeof(ProposalDetails), nameof(SubmitProposal.Details), navigationBuilder =>
             {
-                navigationBuilder.Property(nameof(ProposalContent.Title))
+                navigationBuilder.Property(nameof(ProposalDetails.Title))
                     .IsRequired();
 
-                navigationBuilder.Property(nameof(ProposalContent.Description))
+                navigationBuilder.Property(nameof(ProposalDetails.Description))
                     .IsRequired();
             });
 

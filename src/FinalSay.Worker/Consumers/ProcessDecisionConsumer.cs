@@ -6,24 +6,24 @@ using Microsoft.Extensions.Logging;
 
 namespace FinalSay.Worker.Consumers;
 
-public class ProcessProposalConsumer : IConsumer<ProcessProposal>
+public class ProcessDecisionConsumer : IConsumer<ProcessDecision>
 {
     private readonly FinalSayDbContext _dbContext;
-    private readonly ILogger<ProcessProposalConsumer> _logger;
+    private readonly ILogger<ProcessDecisionConsumer> _logger;
 
-    public ProcessProposalConsumer(ILogger<ProcessProposalConsumer> logger, FinalSayDbContext dbContext)
+    public ProcessDecisionConsumer(ILogger<ProcessDecisionConsumer> logger, FinalSayDbContext dbContext)
     {
         _logger = logger;
         _dbContext = dbContext;
     }
 
-    public async Task Consume(ConsumeContext<ProcessProposal> context)
+    public async Task Consume(ConsumeContext<ProcessDecision> context)
     {
         var message = context.Message;
 
-        _logger.LogInformation("Received proposal from {Author} with {MembersCount} members. {Message}",
+        _logger.LogInformation("Received decision from {Author} for proposal {Proposal}. {Message}",
             message.AuthorMemberId,
-            message.Members.Count,
+            message.ProposalId,
             message.ToString());
 
         await Task.Delay(3000);

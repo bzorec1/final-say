@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using FinalSay.Contracts;
 using MassTransit;
 
 namespace FinalSay.Repository;
 
-public class FinalSayState : SagaStateMachineInstance
+public sealed class FinalSayState : SagaStateMachineInstance
 {
     public Guid CorrelationId { get; set; }
 
     public int CurrentState { get; set; }
-
-    public List<Decisions> Decisions { get; set; } = [];
 
     public DateTime SubmittedAt { get; set; }
 
