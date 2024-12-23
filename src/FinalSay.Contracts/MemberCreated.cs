@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FinalSay.Contracts.Events;
+namespace FinalSay.Contracts;
 
 /// <summary>
 /// Represents an event that indicates a new member has been successfully created.

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace FinalSay.Contracts.Commands;
+namespace FinalSay.Contracts;
 
 /// <summary>
-/// Represents a request to submit a new proposal for review and decision-making.
+/// Represents a command to process a proposal, containing the proposal details and the associated members for review and decision.
 /// </summary>
-public sealed record SubmitProposal
+public sealed record ProcessProposal
 {
     /// <summary>
     /// The unique identifier for the proposal.

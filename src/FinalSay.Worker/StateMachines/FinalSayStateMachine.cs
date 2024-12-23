@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
-using FinalSay.Contracts.Commands;
-using FinalSay.Contracts.Events;
+using FinalSay.Contracts;
 using FinalSay.Repository;
 using MassTransit;
 
@@ -55,10 +54,10 @@ public sealed class FinalSayStateMachine : MassTransitStateMachine<FinalSayState
                 .TransitionTo(Cancelled)
                 .SendResponseAsync(x => new ProposalCancelled
                 {
+                    CancelledAt = DateTime.Now,
                     ProposalId = x.Message.Message.ProposalId,
                     AuthorMemberId = x.Message.Message.AuthorMemberId,
-                    Details = x.Message.Message.Details,
-                    Error = string.Join(", ", x.Message.Exceptions.Select(e => e.Message))
+                    Reason = string.Join(", ", x.Message.Exceptions.Select(e => e.Message))
                 }),
             When(ProcessProposal.TimeoutExpired)
                 .TransitionTo(Cancelled)
@@ -66,8 +65,8 @@ public sealed class FinalSayStateMachine : MassTransitStateMachine<FinalSayState
                 {
                     ProposalId = x.Message.Message!.ProposalId,
                     AuthorMemberId = x.Message.Message!.AuthorMemberId,
-                    Details = x.Message.Message!.Details,
-                    Error = "The proposal processing timed out."
+                    CancelledAt = DateTime.Now,
+                    Reason = "The proposal processing timed out."
                 }));
 
         During(Created,
@@ -95,18 +94,18 @@ public sealed class FinalSayStateMachine : MassTransitStateMachine<FinalSayState
                 .TransitionTo(Created)
                 .SendResponseAsync(x => new DecisionRejected
                 {
+                    DecisionId = x.Message.Message.DecisionId,
                     ProposalId = x.Message.Message.ProposalId,
                     AuthorMemberId = x.Message.Message.AuthorMemberId,
-                    Decision = x.Message.Message.Decision,
                     Reason = string.Join(", ", x.Message.Exceptions.Select(e => e.Message))
                 }),
             When(ProcessDecision.TimeoutExpired)
                 .TransitionTo(Created)
                 .SendResponseAsync(x => new DecisionRejected
                 {
+                    DecisionId = x.Message.Message!.DecisionId,
                     ProposalId = x.Message.Message!.ProposalId,
                     AuthorMemberId = x.Message.Message.AuthorMemberId,
-                    Decision = x.Message.Message.Decision,
                     Reason = "The decision processing timed out."
                 }));
 

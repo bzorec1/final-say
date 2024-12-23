@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using FinalSay.Contracts.Events;
+using FinalSay.Contracts;
 using FinalSay.Repository;
 using MassTransit;
 using Microsoft.Extensions.Logging;

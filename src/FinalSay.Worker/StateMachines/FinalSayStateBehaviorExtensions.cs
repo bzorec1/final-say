@@ -1,5 +1,5 @@
 ﻿using System;
-using FinalSay.Contracts.Commands;
+using FinalSay.Contracts;
 using FinalSay.Repository;
 using MassTransit;
 

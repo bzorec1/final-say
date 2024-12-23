@@ -1,4 +1,4 @@
-﻿namespace FinalSay.Contracts.Commands;
+﻿namespace FinalSay.Contracts;
 
 /// <summary>
 /// Represents a command to create a new member with their name and email address.

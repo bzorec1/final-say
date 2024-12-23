@@ -1,12 +1,17 @@
 ﻿using System;
 
-namespace FinalSay.Contracts.Commands;
+namespace FinalSay.Contracts;
 
 /// <summary>
 /// Represents a decision submitted for a specific proposal by a member.
 /// </summary>
 public sealed record SubmitDecision
 {
+    /// <summary>
+    /// The unique identifier of the decision.
+    /// </summary>
+    public Guid DecisionId { get; init; }
+
     /// <summary>
     /// The unique identifier of the proposal associated with the decision.
     /// </summary>
