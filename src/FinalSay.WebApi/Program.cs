@@ -1,14 +1,17 @@
-using FinalSay.Contracts;
+using FinalSay.WebApi.EndpointDefinitions;
+using FinalSay.WebApi.Infrastructure;
 using MassTransit;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddApiEndpointDefinitions(typeof(MemberApiEndpointDefinition));
 
 builder.Services.AddMassTransit(x =>
 {
     x.UsingRabbitMq((context, cfg) =>
     {
         cfg.UseDelayedMessageScheduler();
-
         cfg.ConfigureEndpoints(context);
     });
 });
@@ -20,23 +23,10 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference();
 }
 
 app.UseHttpsRedirection();
-
-app.MapPost("/submit/proposal", async (
-    IRequestClient<SubmitProposal> requestClient,
-    SubmitProposal proposal,
-    CancellationToken cancellationToken = default) =>
-{
-    var response = await requestClient.GetResponse<ProposalSubmitted>(proposal, cancellationToken);
-
-    return Results.Accepted(null, response.Message);
-});
-app.MapPost("/submit/decision", async (IPublishEndpoint endpoint, SubmitDecision decision) =>
-{
-    await endpoint.Publish(decision);
-    return Results.Accepted();
-});
+app.UseApiEndpointDefinitions();
 
 app.Run();

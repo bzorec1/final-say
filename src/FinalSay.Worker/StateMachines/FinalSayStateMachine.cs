@@ -13,11 +13,6 @@ public sealed class FinalSayStateMachine : MassTransitStateMachine<FinalSayState
         InstanceState(state => state.CurrentState, Created, Cancelled, Approved, Rejected);
 
         Event(() => SubmitProposal, x => x.CorrelateById(context => context.Message.ProposalId));
-        Event(() => ProposalSubmitted, x =>
-        {
-            x.CorrelateById(context => context.Message.ProposalId);
-            x.OnMissingInstance(configurator => configurator.Discard());
-        });
         Event(() => SubmitDecision, x =>
         {
             x.CorrelateById(context => context.Message.ProposalId);
@@ -49,6 +44,9 @@ public sealed class FinalSayStateMachine : MassTransitStateMachine<FinalSayState
         During(ProcessProposal.Pending,
             When(ProcessProposal.Completed)
                 .TransitionTo(Created)
+                .SendResponseAsync(x => x.Message),
+            When(ProcessProposal.Completed2)
+                .TransitionTo(Rejected)
                 .SendResponseAsync(x => x.Message),
             When(ProcessProposal.Faulted)
                 .TransitionTo(Cancelled)
@@ -128,7 +126,7 @@ public sealed class FinalSayStateMachine : MassTransitStateMachine<FinalSayState
 
     public State? Approved { get; set; }
 
-    public Request<FinalSayState, ProcessProposal, ProposalAccepted> ProcessProposal { get; set; }
+    public Request<FinalSayState, ProcessProposal, ProposalAccepted, ProposalRejected> ProcessProposal { get; set; }
 
     public Request<FinalSayState, ProcessDecision, DecisionAccepted, ProposalApproved, ProposalRejected> ProcessDecision
     {
@@ -139,8 +137,6 @@ public sealed class FinalSayStateMachine : MassTransitStateMachine<FinalSayState
     public Event<FinalSayStateRequested>? FinalSayStateRequested { get; set; }
 
     public Event<SubmitProposal>? SubmitProposal { get; set; }
-
-    public Event<ProposalSubmitted>? ProposalSubmitted { get; set; }
 
     public Event<SubmitDecision>? SubmitDecision { get; set; }
 }
