@@ -1,5 +1,6 @@
 ﻿using System;
 using FinalSay.Contracts;
+using FinalSay.Repository;
 using MassTransit;
 
 namespace FinalSay.Worker.StateMachines;
@@ -27,57 +28,44 @@ public class FinalSayStateMachine : MassTransitStateMachine<FinalSayState>
             x.OnMissingInstance(configurator => configurator.Fault());
         });
         Request(() => ProcessProposal, proposal => proposal.CorrelationId, config => config.Timeout = TimeSpan.Zero);
+        Request(() => ProcessDecision, proposal => proposal.CorrelationId, config => config.Timeout = TimeSpan.Zero);
 
         Initially(
             When(SubmitProposal)
-                .Then(context =>
-                {
-                    context.Saga.CorrelationId = context.Message.ProposalId;
-                    context.Saga.SubmittedAt = context.Message.SubmittedAt;
-                    context.Saga.DecidedAt = null;
-                    context.Saga.Decisions = [];
-
-                    context.Saga.RequestId = context.RequestId;
-                    context.Saga.ResponseAddress = context.ResponseAddress;
-                })
-                .Request(ProcessProposal,
-                    context => new ProcessProposal(context.Message.ProposalId, context.Message.Content,
-                        context.Message.Author, context.Message.SubmittedAt, context.Message.Members))
+                .InitializeProposal()
+                .Request(ProcessProposal, context => new ProcessProposal(context.Message))
                 .TransitionTo(ProcessProposal!.Pending));
 
         During(ProcessProposal.Pending,
             When(ProcessProposal.Completed)
                 .TransitionTo(Created)
-                .ThenAsync(async context =>
-                {
-                    if (context.Saga.ResponseAddress != null)
-                    {
-                        var endpoint = await context.GetSendEndpoint(context.Saga.ResponseAddress);
-                        await endpoint.Send(context.Saga, r => r.RequestId = context.Saga.RequestId);
-                    }
-                }),
+                .SendResponseAsync(x => new ProposalAccepted(x.Message.ProposalId)),
             When(ProcessProposal.Faulted)
                 .TransitionTo(Cancelled)
-                .ThenAsync(async context =>
-                {
-                    if (context.Saga.ResponseAddress != null)
-                    {
-                        var endpoint = await context.GetSendEndpoint(context.Saga.ResponseAddress);
-                        await endpoint.Send(new ProposalRejected(context.Saga.CorrelationId),
-                            r => r.RequestId = context.Saga.RequestId);
-                    }
-                }),
+                .SendResponseAsync(x => new ProposalRejected(x.Message.Message.ProposalId)),
             When(ProcessProposal.TimeoutExpired)
                 .TransitionTo(Cancelled)
-                .ThenAsync(async context =>
-                {
-                    if (context.Saga.ResponseAddress != null)
-                    {
-                        var endpoint = await context.GetSendEndpoint(context.Saga.ResponseAddress);
-                        await endpoint.Send(new ProposalCancelled(context.Saga.CorrelationId),
-                            r => r.RequestId = context.Saga.RequestId);
-                    }
-                }));
+                .SendResponseAsync(x => new ProposalCancelled(x.Message.Message!.ProposalId)));
+
+        During(Created,
+            When(SubmitDecision)
+                .InitializeDecision()
+                .Request(ProcessDecision, context => new ProcessDecision(context.Message))
+                .TransitionTo(ProcessDecision!.Pending));
+
+        During(ProcessDecision.Pending,
+            When(ProcessDecision.Completed)
+                .TransitionTo(Approved)
+                .SendResponseAsync(x => new DecisionAccepted(x.Message.ProposalId)),
+            When(ProcessDecision.Completed2)
+                .TransitionTo(Rejected)
+                .SendResponseAsync(x => new DecisionRejected(x.Message.ProposalId)),
+            When(ProcessDecision.Faulted)
+                .TransitionTo(Rejected)
+                .SendResponseAsync(x => new DecisionRejected(x.Message.Message.ProposalId)),
+            When(ProcessDecision.TimeoutExpired)
+                .TransitionTo(Rejected)
+                .SendResponseAsync(x => new DecisionRejected(x.Message.Message!.ProposalId)));
 
         DuringAny(
             When(FinalSayStateRequested)
@@ -101,10 +89,12 @@ public class FinalSayStateMachine : MassTransitStateMachine<FinalSayState>
 
     public Request<FinalSayState, ProcessProposal, ProposalAccepted> ProcessProposal { get; set; }
 
+    public Request<FinalSayState, ProcessDecision, DecisionApproved, DecisionRejected> ProcessDecision { get; set; }
+
     public Event<FinalSayStateRequested>? FinalSayStateRequested { get; set; }
 
     public Event<SubmitProposal>? SubmitProposal { get; set; }
-
+    
     public Event<ProposalSubmitted>? ProposalSubmitted { get; set; }
 
     public Event<SubmitDecision>? SubmitDecision { get; set; }

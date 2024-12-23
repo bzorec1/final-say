@@ -2,8 +2,10 @@ using System;
 using System.Reflection;
 using System.Threading.Tasks;
 using FinalSay.Repository;
+using FinalSay.Worker.Consumers;
 using Microsoft.Extensions.Hosting;
 using MassTransit;
+using Microsoft.EntityFrameworkCore;
 
 namespace FinalSay.Worker;
 
@@ -14,35 +16,30 @@ public static class Program
         await CreateHostBuilder(args).Build().RunAsync();
     }
 
-    public static IHostBuilder CreateHostBuilder(string[] args) => Host
-        .CreateDefaultBuilder(args)
-        .ConfigureServices((hostContext, services) =>
-        {
-            var connectionString = hostContext.Configuration.GetSection("ConnectionStrings:Default").Value;
-
-            services.AddFinalSayRepository(connectionString ?? throw new InvalidOperationException());
-
-            services.AddMassTransit(x =>
+    public static IHostBuilder CreateHostBuilder(string[] args)
+    {
+        return Host
+            .CreateDefaultBuilder(args)
+            .ConfigureServices((hostContext, services) =>
             {
-                x.AddDelayedMessageScheduler();
+                var connectionString = hostContext.Configuration.GetSection("ConnectionStrings:Default").Value;
 
-                x.SetKebabCaseEndpointNameFormatter();
+                services.AddFinalSayRepository(connectionString ?? throw new InvalidOperationException());
 
-                x.SetInMemorySagaRepositoryProvider();
-
-                var entryAssembly = Assembly.GetEntryAssembly();
-
-                x.AddConsumers(entryAssembly);
-                x.AddSagaStateMachines(entryAssembly);
-                x.AddSagas(entryAssembly);
-                x.AddActivities(entryAssembly);
-
-                x.UsingRabbitMq((context, cfg) =>
+                services.AddMassTransit(x =>
                 {
-                    cfg.UseDelayedMessageScheduler();
+                    x.AddDelayedMessageScheduler();
+                    x.SetKebabCaseEndpointNameFormatter();
+                    
+                    x.AddConsumer<ProcessProposalConsumer>();
+                    
+                    x.UsingRabbitMq((context, cfg) =>
+                    {
+                        cfg.UseDelayedMessageScheduler();
 
-                    cfg.ConfigureEndpoints(context);
+                        cfg.ConfigureEndpoints(context);
+                    });
                 });
             });
-        });
+    }
 }

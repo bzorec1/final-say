@@ -4,6 +4,10 @@ namespace FinalSay.Contracts;
 
 public class ProcessDecision
 {
+    public ProcessDecision(SubmitDecision message)
+    {
+    }
+
     public Guid ProposalId { get; init; }
 
     public string Member { get; init; } = null!;

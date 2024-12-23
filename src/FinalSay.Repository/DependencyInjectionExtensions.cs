@@ -7,11 +7,8 @@ public static class DependencyInjectionExtensions
 {
     public static IServiceCollection AddFinalSayRepository(this IServiceCollection services, string connectionString)
     {
-        services.AddDbContext<FinalSayDbContext>(options =>
-        {
-            options.UseSqlServer(connectionString);
-        });
+        services.AddDbContext<FinalSayDbContext>(options => { options.UseSqlServer(connectionString); });
 
         return services;
-    } 
+    }
 }
